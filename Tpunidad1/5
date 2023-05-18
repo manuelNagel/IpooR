@@ -1,0 +1,76 @@
+<?php
+    class Persona{
+        //propiedades
+        private $dni;
+        private $telefono;
+        private $sexo;
+        private $altura;
+        private $edad;
+        private $nombreCompleto
+
+        public function __construct($dni,$telefono,$sexo,$altura,$edad,$nombreCompleto){
+            $this->dni=$dni;
+            $this->telefono=$telefono;
+            $this->sexo=$sexo;
+            $this->altura=$altura;
+            $this->edad=$edad;
+            $this->nombreCompleto=$nombreCompleto;
+        }
+
+        //metodo observadores
+        public function getDni(){
+            return $this->dni;
+        }
+
+        public function getTelefono(){
+            return $this->telefono;
+        }
+
+        public function getSexo(){
+            return $this->sexo;
+        }
+
+        public function getAltura(){
+            return $this->altura;
+        }
+
+        public function getEdad(){
+            return $this->edad;
+        }
+
+        public function getNombreCompleto(){
+            return $this->nombreCompleto;
+        }
+
+        //metodos modificadores
+        public function setDni($dni){
+            $this->dni = $dni;
+        }
+
+        public function setEdad($edad){
+            $this->edad = $edad; 
+        }
+
+        public function setTelefono($telefono){
+            $this->telefono =$telefono; 
+        }
+
+        public function setSexo($sexo){
+            $this->sexo = $sexo
+        }
+
+        public function setNombreCompleto($nombreCompleto){
+            $this->nombreCompleto = $nombreCompleto
+        }
+
+        public function setAltura($Altura){
+            $this->altura = $Altura
+        }
+
+        //tostring
+
+        public function __toString(){
+            return "\nNombre y Apellido: ".$this->getNombreCompleto()."\nDni: ".$this->getNombreCompleto()."\nAltura: ".$this->getAltura()."\nSexo: ".$this->getSexo()."\nTelefono ".$this->getTelefono();
+        }
+    }
+?>
