@@ -17,7 +17,7 @@
         $this->destino= $dest;
         $this->pasajerosMax = $pasM;
         $this->pasajeros = $pas;
-        $this->responsable = $res;
+        $this->Responsable = $res;
         $this->costoViaje = $cost;
         $this->costoAbonadoXPasajeros=$costAb;
         
@@ -71,7 +71,7 @@
      * @return object
      */
     public function getResponsables(){
-        return $this->responsables;
+        return $this->Responsable;
     }
 
     //Modificadores
@@ -89,7 +89,7 @@
      * @param int $pasM
      */
     public function setMaxPasajeros ($pasM){
-        $this->maxPasajeros = $pasM;
+        $this->pasajerosMax = $pasM;
     }
 
     /**
@@ -117,7 +117,7 @@
      * @param  object $Res
      */
     public function setResponsable($res){
-        $this->responsable=$res;
+        $this->Responsable=$res;
     }
 
     //Metodos propio
@@ -129,9 +129,10 @@
     public function venderPasaje($objPasajero){
         if($this->hayPasajesDisponibles()){
             $costoViaje= $this->getCostoViaje()*$objPasajero->darPorcentajeIncremento();
-            
-            $this->setPasajeros(array_push($this->getPasajeros,$objPasajero));
-            $this->setCostoAbonadoXPasajeros=$this->getCostoAbonadoXPasajeros+$costoViaje;
+            $pasajeros=$this->getPasajeros();
+            $pasajeros[]=$objPasajero;
+            $this->setPasajeros($pasajeros);
+            $this->setCostoAbonadoXPasajeros($this->getCostoAbonadoXPasajeros()+$costoViaje);
             
             echo "Se puede vender el pasaje correctamente, el precio es: ".$costoViaje;
             return $costoViaje;
@@ -142,16 +143,16 @@
     }
 
     public function hayPasajesDisponibles(){
-        return $this->getMaxPasajeros()>count($this->getPasajeros);
+        return $this->getMaxPasajeros()>count($this->getPasajeros());
     }
     //Metodo toString
 
     public function __toString(){
         $cad = "";
         for($numPasajero = 0; $numPasajero < count($this -> pasajeros); $numPasajero++ ){
-            $cad .= "\n Pasajero nro " . ($numPasajero+1) .$this->getPasajeros[$numPasajero];
+            $cad .= "\n Pasajero nro " . ($numPasajero+1) .$this->getPasajeros()[$numPasajero];
         }
-        return "\nVuelo " . $this->getCodigo() . ".\nDestino: " . $this->getDestino() . "\nCantidad maxima de pasajeros: " . $this->getMaxPasajeros() . "\nResponsable: ".$this->responsable->__toString()."\nCosto de Viaje: ".$this->getCostoViaje()."\nCosto Abonado Por Pasajeros: ".$this->getCostoAbonadoXPasajeros()."\nPasajeros:\n" . $cad;
+        return "\nVuelo " . $this->getCodigo() . ".\nDestino: " . $this->getDestino() . "\nCantidad maxima de pasajeros: " . $this->getMaxPasajeros() . "\nResponsable: ".$this->Responsable->__toString()."\nCosto de Viaje: ".$this->getCostoViaje()."\nCosto Abonado Por Pasajeros: ".$this->getCostoAbonadoXPasajeros()."\nPasajeros:\n" . $cad;
     }
 
 }

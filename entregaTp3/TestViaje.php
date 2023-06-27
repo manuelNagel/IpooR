@@ -13,11 +13,11 @@ include "TipoNecesidad.php";
 function preCarga(){
     $val = new TipoNecesidad(true,true,false,false,false);
     $coleccionPasajeros= array( 
-                    new Pasajero("Manuel",10,15000),
-                    new PasajeroEspecial("Lucia",11,15001,new TipoNecesidad(true,true,false,false,false)),
-                    new PasajeroVIP("Juani",13,11487,14423432,301),
-                    new PasajeroEspecial("Franciso",15,11492,new TipoNecesidad(true,false,false,false,false)),
-                    new PasajeroVIP("Luz",8,11132,35809143,299)
+                    new Pasajero(42735572,"Manuel","Nagel",10,15000),
+                    new PasajeroEspecial(5239454,"Lucia","Castro",11,15001,new TipoNecesidad(true,true,false,false,false)),
+                    new PasajeroVIP(6234314,"Juani","Sabio",13,11487,14423432,301),
+                    new PasajeroEspecial(20280046,"Franciso","Grasso",15,11492,new TipoNecesidad(true,false,false,false,false)),
+                    new PasajeroVIP(8959434,"Luz","Scocco",8,11132,35809143,299)
    
                         );
     $responsableV= new ResponsableV(1,13,"Gustavo","McNiles");
@@ -68,8 +68,11 @@ function crearResponsable(){
      $numPasajero=0;
      $arregloPasajeros = array() ;
      do{
+        $documento = validacionRepetidos($arregloPasajeros,$numPasajero);
         echo "\nIngrese el nombre del pasajero número ". ($numPasajero+1) . " : ";
         $nombre = trim(fgets(STDIN));
+        echo "\nIngrese el apellido del pasajero número ".($numPasajero+1) . " : ";
+        $apellido = trim(fgets(STDIN));
         $nroTicket = validacionRepetidosTickets($arregloPasajeros,$numPasajero);
         $nroAsiento = validacionRepetidosAsiento($arregloPasajeros,$numPasajero);
         $tipoPas=-1;
@@ -84,22 +87,53 @@ function crearResponsable(){
         }while(!($tipoPas>0&&$tipoPas<4));
         
         switch($tipoPas){
-            case 1: array_push($arregloPasajeros,new Pasajero($nombre,$nroAsiento,$nroTicket));break;
-            case 2: $VFrec = validacionRepetidosViajeroFrecuente();
+            case 1: $arregloPasajeros[$numPasajero]=new Pasajero($documento,$nombre,$apellido,$nroAsiento,$nroTicket);break;
+            case 2: $VFrec = validacionRepetidosViajeroFrecuente($arregloPasajeros,$numPasajero);
                     echo "Ingrese las millas acumuladas del pasajero";
                     $millas= trim(fgets(STDIN));
-                    array_push($arregloPasajeros,new PasajeroVIP($nombre,$nroAsiento,$nroTicket,$VFrec,$millas));;break;
-            case 3: array_push($arregloPasajeros,new PasajeroEspecial($nombre,$nroTicket,$nroAsiento,crearTipoNecesidad())) ;break;
+                   $arregloPasajeros[$numPasajero]=new PasajeroVIP($documento,$nombre,$apellido,$nroAsiento,$nroTicket,$VFrec,$millas);;break;
+            case 3: $arregloPasajeros[$numPasajero]=new PasajeroEspecial($documento,$nombre,$apellido,$nroTicket,$nroAsiento,crearTipoNecesidad());break;
             default:echo "error tipo pasajero";break;
         }
-        //Asignamos los datos al numero ingresado por parametro
-
-        $arregloPasajeros[$numPasajero]= new Pasajero($nombre,$nroAsiento,$nroTicket);
         $numPasajero++;
      }while($numPasajero<$cantidadPasajeros);
     
      return $arregloPasajeros;
  }
+
+ /**
+ * Modulo que verifica que el pasajero no este repetido
+ * @param array $aPas
+ * @param int $iteracion
+ * @return int
+ */
+function validacionRepetidos($aPas,$iteracion){
+    //$aPas[0]->getDocumento();
+    $cond=true;
+    if($iteracion==0){
+        echo "\nIngrese el documento del pasajero número " . ($iteracion+1) . " : ";
+        $doc = trim(fgets(STDIN));
+        return $doc;
+    }
+    while($cond){
+        echo "\nIngrese el documento del pasajero número " . ($iteracion+1) . " : ";
+            $doc = trim(fgets(STDIN));
+            $cond2=true;
+            foreach ($aPas as $value) {
+                $valores= $value->getDocumento();
+                if($doc==$valores){
+                    echo "este pasajero ya existe.";
+                    $cond2=false;
+                    break;
+                }
+              }
+              if($cond2==true){
+                return $doc;
+              }
+              
+    
+    }
+}
 
  /**
   * Funcion para crear el tipoNecesidad apra pasajero especial
@@ -176,7 +210,7 @@ function validacionRepetidosViajeroFrecuente($aPas,$iteracion){
     if($iteracion==0){
         echo "\nIngrese el nro de viajero frecuente del pasajero número " . ($iteracion+1) . " : ";
         $VFrec = trim(fgets(STDIN));
-        return $nroAsiento;
+        return $VFrec;
     }
     while($cond){
         echo "\nIngrese el nro de viajero frecuente  del pasajero número " . ($iteracion+1) . " : ";
@@ -259,33 +293,40 @@ function agregarPasajero($vuelo)
     if ($vuelo->hayPasajesDisponibles()) {
         $arregloPasajeros = $vuelo->getPasajeros();
         $numPasajero = count($arregloPasajeros);
-    //introduccion datos
-    $nroTicket = validacionRepetidosTickets($arregloPasajeros,$numPasajero);
-    $nroAsiento = validacionRepetidosAsiento($arregloPasajeros,$numPasajero);
-    $tipoPas=-1;
-    $cond=false;
-    do{
-        if($cond){
-            echo "Intente de nuevo, valor incorrecto";
-        }
-    echo"\nQue tipo de pasajero es : \n1.Estandar\n2.VIP\n3.Especial";
-    $tipoPas = trim(fgets(STDIN));
-    $cond=true;
-    }while(!($tipoPas>0&&$tipoPas<4));
-    
-    switch($tipoPas){
-        case 1: array_push($arregloPasajeros,new Pasajero($nombre,$nroAsiento,$nroTicket));break;
-        case 2: $VFrec = validacionRepetidosViajeroFrecuente();
-                echo "Ingrese las millas acumuladas del pasajero";
-                $millas= trim(fgets(STDIN));
-                array_push($arregloPasajeros,new PasajeroVIP($nombre,$nroAsiento,$nroTicket,$VFrec,$millas));;break;
-        case 3: array_push($arregloPasajeros,new PasajeroEspecial($nombre,$nroTicket,$nroAsiento,crearTipoNecesidad())) ;break;
-        default:echo "error tipo pasajero";break;
+        //introduccion datos
+        $documento = validacionRepetidos($arregloPasajeros,$numPasajero);
+        echo "\nIngrese el nombre del pasajero número ". ($numPasajero) . " : ";
+        $nombre = trim(fgets(STDIN));
+        echo "\nIngrese el apellido del pasajero número ".($numPasajero+1) . " : ";
+        $apellido = trim(fgets(STDIN));
+        $nroTicket = validacionRepetidosTickets($arregloPasajeros,$numPasajero);
+        $nroAsiento = validacionRepetidosAsiento($arregloPasajeros,$numPasajero);
+        $tipoPas=-1;
+        $cond=false;
+        do{
+            if($cond){
+                echo "Intente de nuevo, valor incorrecto";
+            }
+            echo"\nQue tipo de pasajero es : \n1.Estandar\n2.VIP\n3.Especial";
+            $tipoPas = trim(fgets(STDIN));
+            $cond=true;
+        }while(!($tipoPas>0&&$tipoPas<4));
 
+        switch($tipoPas){
+            case 1: $arregloPasajeros[]=new Pasajero($documento,$nombre,$apellido,$nroAsiento,$nroTicket);break;
+            case 2: $VFrec = validacionRepetidosViajeroFrecuente($arregloPasajeros,$numPasajero);
+                    echo "Ingrese las millas acumuladas del pasajero";
+                    $millas= trim(fgets(STDIN));
+                    $arregloPasajeros[]=new PasajeroVIP($documento,$nombre,$apellido,$nroAsiento,$nroTicket,$VFrec,$millas);;break;
+            case 3: $arregloPasajeros[]=new PasajeroEspecial($documento,$nombre,$apellido,$nroTicket,$nroAsiento,crearTipoNecesidad()) ;break;
+            default:echo "error tipo pasajero";break;
+
+        }
+        //seteamos pasajeros en el objeto
+        $vuelo->setPasajeros($arregloPasajeros);
+    }else{
+        echo "no hay pasajes disponibles";
     }
-    //seteamos pasajeros en el objeto
-    $vuelo->setPasajeros($arreglosPasajeros);
-}
 }
 
 /**
@@ -311,9 +352,14 @@ function editarPasajero($vuelo)
 {
     $pasNuevo = $vuelo->getPasajeros();
     $num = valNumMod($vuelo);
+    //reseteamos doc por si se modifica el mismo pasajero y asi evitamos hacer otra funcion apra la validacion del documento
+    $pasNuevo[$num]->setDocumento(0);
     //Pedimos los datos del nuevo pasajero
+    $documento = validacionRepetidos($pasNuevo,$num);
     echo "\nIngrese el nombre del nuevo pasajero: ";
     $nombre = trim(fgets(STDIN));
+    echo "\nIngrese el apellido dle nuevo pasajero: ";
+    $apellido = trim(fgets(STDIN));
     echo "Ingrese el Nro de ticket del pasajero";
     $nroTicket = trim(fgets(STDIN));
     echo "Ingrese el Nro de Asiento del pasajero: ";
@@ -321,13 +367,13 @@ function editarPasajero($vuelo)
     $tipo = get_class($pasNuevo);
 
     switch($tipo){
-        case "Pasajero": $pasNuevo[$num-1]=new Pasajero($nombre,$numAsiento,$nroTicket);break;
+        case "Pasajero": $pasNuevo[$num-1]=new Pasajero($documento,$nombre,$apellido,$numAsiento,$nroTicket);break;
         case "PasajeroVIP": echo "Ingrese el numero de viajero frecuente";
                             $VFrec=trim(fgets(STDIN));
                             echo "Ingrese las millas acumuladas";
                             $millas= trim(fgets(STDIN));
-                            $pasNuevo[$num-1]=new PasajeroVIP($nombre,$numAsiento,$nroTicket,$VFrec,$millas);break;
-        case "PasajeroEspecial":$pasNuevo[$num-1]=new PasajeroVIP($nombre,$numAsiento,$nroTicket,crearTipoNecesidad());break;
+                            $pasNuevo[$num-1]=new PasajeroVIP($documento,$nombre,$apellido,$numAsiento,$nroTicket,$VFrec,$millas);break;
+        case "PasajeroEspecial":$pasNuevo[$num-1]=new PasajeroEspecial($documento,$nombre,$apellido,$numAsiento,$nroTicket,crearTipoNecesidad());break;
         default: echo "error en pasajero mal definido";
     }
     //Devolvemos el arreglo a la clase para que lo modifique

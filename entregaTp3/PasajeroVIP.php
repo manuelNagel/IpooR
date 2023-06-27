@@ -7,9 +7,9 @@ class PasajeroVIP extends Pasajero{
     private $numVFrecuente;
     private $millasAcum;
 
-    public function __construct($nom,$numA,$numT,$numVF,$mil){
+    public function __construct($doc,$nom,$ape,$numA,$numT,$numVF,$mil){
         //Constructor PasajeroVIP
-        parent:: __construct($nom,$numA,$numT);
+        parent:: __construct($doc,$nom,$ape,$numA,$numT);
         $this->numVFrecuente = $numVF;
         $this->millasAcum = $mil;
     }
@@ -29,7 +29,7 @@ class PasajeroVIP extends Pasajero{
     }
 
     public function setAcumMillas($mil){
-        $this->millasACum = $mil;
+        $this->millasAcum = $mil;
     }
     //metodos propios
     public function darPorcentajeIncremento() {

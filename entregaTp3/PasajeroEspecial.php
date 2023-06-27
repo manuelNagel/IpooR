@@ -5,8 +5,8 @@ include  'Pasajero.php';
 class PasajeroEspecial extends Pasajero{
     private $TipoNecesidad;
 
-    public function __construct($nom,$numA,$numT,$tip){
-        parent::__construct($nom,$numA,$numT);
+    public function __construct($doc,$nom,$ape,$numA,$numT,$tip){
+        parent::__construct($doc,$nom,$ape,$numA,$numT);
         $this->TipoNecesidad = $tip;
     }
 
@@ -27,9 +27,9 @@ class PasajeroEspecial extends Pasajero{
      */
     public function darPorcentajeIncremento(){
         $porc= parent::darPorcentajeIncremento();
-        $tipoN=$this->getTipoNecesidad;
+        $tipoN=$this->getTipoNecesidad();
         $cond = $tipoN->HayNecesidad();
-        if(cond){
+        if($cond){
             $cont=0;
             $cont += $tipoN->getSillaRuedas() ? 1 : 0;
             $cont += $tipoN->getAsistenciaEmbarque() ? 1 : 0;

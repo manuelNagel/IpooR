@@ -1,19 +1,32 @@
 <?php
  class Pasajero{
      //propiedades/atributos
+     private $documento;
      private $nombre;
+     private $apellido;
      private $numAsientos;
      private $nroTicket;
 
      //constructor
-    public function __construct($nom,$numA,$numT)
-    {
+    public function __construct($doc,$nom,$ape,$numA,$numT)
+    {   
+        $this->documento = $doc;
         $this->nombre=$nom;
+        $this->apellido = $ape;
         $this->numAsientos=$numA;
         $this->nroTicket=$numT;
         
     }
+
     //metodos observadores
+
+    public function getDocument(){
+        return $this->documento;
+    }
+
+    public function getApellido(){
+        return $this->apellido;
+    }
     /**
      * @return string
      */
@@ -60,7 +73,7 @@
     //__toString
     public function __toString()
     {
-        return "\nNombre: ".$this->getNombre()."\nNumero Asiento: ".$this->getNumAsientos()."\nNúmero de Ticket: ".$this->getNroTicket();
+        return "\nNombre y Apellido: ".$this->getNombre()." ".$this->getApellido()."\nNumero Asiento: ".$this->getNumAsientos()."\nNúmero de Ticket: ".$this->getNroTicket();
         
     }
  }

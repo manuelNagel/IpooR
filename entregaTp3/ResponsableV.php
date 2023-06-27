@@ -65,7 +65,7 @@
         public function __toString()
         {
             return "\nNombre y apellido del responsable: ".$this->getNombre()." ".$this->getApellido()."\nNúmero de licencia: ".$this->getNumLicencia()
-            ."\nNúmero de Empleado: ".$this->getNumEmpleado;
+            ."\nNúmero de Empleado: ".$this->getNumEmpleado();
         }
     }
 
