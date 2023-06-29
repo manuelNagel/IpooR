@@ -15,7 +15,7 @@ $pas = new Pasajero();
 $seguir = true;
 
 while ($seguir) {
-    echo("\n*****************  MENU  *****************\n1. Crear empresa.\n2. Modificar empresa.\n3. Eliminar empresa.\n4. Crear Responsable.\n5. Modificar Responsable.\n6. Eliminar Responsable.\n7. Crear Viaje.\n8. Modificar Viaje.\n9. Eliminar Viaje.\n10. Crear Pasajero.\n11. Modificar Pasajero.\n12. Eliminar Pasajero.\n13. Mostrar Empresa.\n14. Mostrar Responsable.\n15. Mostrar Viaje.\n16. Eliminar viaje con pasajeros. \n17. Salir.");
+    echo("\n*****************  MENU  *****************\n1. Crear empresa.\n2. Modificar empresa.\n3. Eliminar empresa.\n4. Crear Responsable.\n5. Modificar Responsable.\n6. Eliminar Responsable.\n7. Crear Viaje.\n8. Modificar Viaje.\n9. Eliminar Viaje.\n10. Crear Pasajero.\n11. Modificar Pasajero.\n12. Eliminar Pasajero.\n13. Mostrar Empresa.\n14. Mostrar Responsable.\n15. Mostrar Viaje.\n16.Salir.");
 
     echo("\nIngrese su operacion: ");
     $opciones = trim(fgets(STDIN));
@@ -32,7 +32,16 @@ while ($seguir) {
         }
         case 3: {
             //ELIMINACION DE EMPRESA
-            eliminarEmpresa();
+            do{
+                
+                echo "\nDesea eliminar la empresa con los responsables asociados? Si:1 No:2";
+                $condicionEliminar= trim(fgets(STDIN));
+                if($condicionEliminar!=1&&$condicionEliminar!=2){
+                    echo"\nValor incorrecto, intene nuevamente";
+                }
+            }while($condicionEliminar!=1&&$condicionEliminar!=2);
+            
+            eliminarEmpresaCompletaConAsociadosONo($condicionEliminar);
             break;
         }
         case 4: {
@@ -66,7 +75,22 @@ while ($seguir) {
         }
         case 9: {
             //ELIMINACION DE VIAJE
+            
+            do{
+                echo "\nDesea eliminar a un viaje con pasajeros? Si:1 No:2";
+                $cond=trim(fgets(STDIN));
+                if($cond!=1||$cond!=2){
+                    echo "\nNumero incorrecto";
+                }
+
+            }while($cond!=1&&$cond!=2);
+            eliminarViajeCompleto();
+            if($cond==1){
+
+            }else if($cond==2){
             eliminarViajeUnicamente();
+            }
+
             break;
         }
         case 10: {
@@ -104,10 +128,6 @@ while ($seguir) {
             break;
         }
         case 16:{
-            //Eliminar Viaje completo con pasajeros
-            eliminarViajeCompleto();
-        }
-        case 17: {
             //SALIR DEL MENU
             echo("\nGracias por usar el servicio.");
             $seguir = false;
@@ -189,20 +209,6 @@ function modificarEmpresa()
     }
 }
 
-function eliminarEmpresa()
-{
-    echo("\nIngrese el id de la empresa a eliminar: ");
-    $pID = trim(fgets(STDIN));
-    $emp = new Empresa();
-    $emp->buscar($pID);
-    $respuesta = $emp->eliminar();
-    if ($respuesta==true) {
-        echo("\nLa eliminacion fue realizada correctamente.");
-    } else {
-        echo $emp->getmensajeoperacion();
-    }
-}
-
 function mostrarEmpresa()
 {
     $emp = new Empresa();
@@ -252,10 +258,15 @@ function modificarResponsable()
     }
 }
 
-function eliminarResponsable()
+function eliminarResponsable($id=0)
 {
-    echo("\nPor favor ingrese el numero de empleado del responsable a eliminar: ");
-    $pNro = trim(fgets(STDIN));
+    if($id==0){
+        echo("\nPor favor ingrese el numero de empleado del responsable a eliminar: ");
+        $pNro = trim(fgets(STDIN));
+    }else{
+        $pNro = $id;
+    }
+   
     $responsable = new Responsable();
     $responsable->buscar($pNro);
     $respuesta = $responsable->eliminar();
@@ -358,10 +369,16 @@ function eliminarViajeUnicamente()
     }
 }
 
-function eliminarViajeCompleto(){
+function eliminarViajeCompleto($idViaje=0){
 $pas = new Pasajero();
-echo("\nIngrese el id del viaje a eliminar: ");
-$pId = trim(fgets(STDIN));
+if($idViaje==0){
+    echo("\nIngrese el id del viaje a eliminar: ");
+    $pId = trim(fgets(STDIN));
+}else{
+    //Para eliminar con id precargado
+    $pId=$idViaje;
+}
+
 $colPas = $pas->listar('idviaje='.$pId);
 if ($colPas == null) {
     $viaje = new Viaje();
@@ -374,6 +391,7 @@ if ($colPas == null) {
     }
 } else {
    $i=0;
+   $cond2 = true;
     do{
         $pasajero = new Pasajero();
         $pasajero->buscar($colPas[$i]->getDocumento());
@@ -384,10 +402,10 @@ if ($colPas == null) {
         } else {
             echo "Error con eliminacion pasajero";
             echo $pasajero->getmensajeoperacion();
-            break;
+            $cond2=false;
         }
         $i++;
-    }while(count($colPas)>0);
+    }while(count($colPas)>$i||$cond2);
     
     $cond=$pas->listar('idviaje='.$pId);
     
@@ -405,6 +423,36 @@ if ($colPas == null) {
         echo "no se pudo ejecutar correctamente el eliminado.";
     }
 }
+}
+
+function eliminarEmpresaCompletaConAsociadosONo($cond){
+    $Viaje = new Viaje();
+    echo("\nIngrese el id de la empresa a eliminar: ");
+    $pID = trim(fgets(STDIN));
+    $emp = new Empresa();
+    $emp->buscar($pID);
+    $colViaje=$Viaje->listar('idempresa='.$pID);
+    $colResponsables=array();
+    foreach ($colViaje as $viaje){
+        $responsable = $viaje->getResponsable();
+        if (!in_array($responsable, $colResponsables)) {
+         $colResponsables[] = $responsable;
+        }
+        eliminarViajeCompleto($viaje->getId());
+    }
+    if($cond==1){
+        foreach($colResponsables as $responsable){
+            eliminarResponsable($responsable->getNumeroE());
+        }
+    }
+    
+    $respuesta = $emp->eliminar();
+    if ($respuesta==true) {
+        echo("\nLa eliminacion fue realizada correctamente.");
+    } else {
+        echo $emp->getmensajeoperacion();
+    }
+
 }
 
 function mostrarViaje()
