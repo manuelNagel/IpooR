@@ -1,5 +1,4 @@
 <?php
-
 include_once "Viaje.php";
 include_once "Empresa.php";
 include_once "Pasajero.php";
@@ -10,7 +9,6 @@ $emp = new Empresa();
 $viaje = new Viaje();
 $responsable = new Responsable();
 $pas = new Pasajero();
-
 
 $seguir = true;
 
@@ -292,6 +290,7 @@ function mostrarResponsable()
 function crearViaje()
 {
     $viaje = new Viaje();
+    $colResponsables= new Responsable();
     echo("\nIngrese el destino del viaje: ");
     $dest = trim(fgets(STDIN));
     if ($viaje->listar("vdestino='".$dest. "'") == null) {
@@ -301,6 +300,10 @@ function crearViaje()
         $idEmp = trim(fgets(STDIN));
         $empresa = buscarEmpresaAux($idEmp);
         echo("\nIngrese el numero del empleado a asignar: ");
+        $colResponsables=$colResponsables->listar();
+        foreach($colResponsables as $responsable){
+            echo "\n".$responsable;
+        }
         $numEmp = trim(fgets(STDIN));
         $empleado = buscarRespAux($numEmp);
         echo("\nIngrese el importe del viaje: ");
